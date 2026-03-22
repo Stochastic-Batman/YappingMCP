@@ -1,6 +1,8 @@
 # YappingMCP
 
-YappingMCP is a command-line interface application that enables interactive chat capabilities with AI models through the Anthropic API. This project is part of Anthropic's **[Introduction to Model Context Protocol](https://anthropic.skilljar.com/introduction-to-model-context-protocol)** course. The application supports document retrieval, command‑based prompts, and extensible tool integrations via the MCP (Model Control Protocol) architecture.
+CLI Chat Interface with MCP
+
+YappingMCP is a command-line interface application that enables interactive chat capabilities with AI models through the Anthropic API. This project is part of Anthropic's [Introduction to Model Context Protocol](https://anthropic.skilljar.com/introduction-to-model-context-protocol) course. The application supports document retrieval, command‑based prompts, and extensible tool integrations via the MCP (Model Context Protocol) architecture.
 
 ## Prerequisites
 
