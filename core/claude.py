@@ -7,6 +7,7 @@ class Claude:
         self.client = Anthropic()
         self.model = model
 
+
     def add_user_message(self, messages: list, message):
         user_message = {
             "role": "user",
@@ -15,6 +16,7 @@ class Claude:
             else message,
         }
         messages.append(user_message)
+
 
     def add_assistant_message(self, messages: list, message):
         assistant_message = {
@@ -25,21 +27,12 @@ class Claude:
         }
         messages.append(assistant_message)
 
-    def text_from_message(self, message: Message):
-        return "\n".join(
-            [block.text for block in message.content if block.type == "text"]
-        )
 
-    def chat(
-        self,
-        messages,
-        system=None,
-        temperature=1.0,
-        stop_sequences=[],
-        tools=None,
-        thinking=False,
-        thinking_budget=1024,
-    ) -> Message:
+    def text_from_message(self, message: Message):
+        return "\n".join([block.text for block in message.content if block.type == "text"])
+
+
+    def chat(self, messages, system=None, temperature=1.0, stop_sequences=[], tools=None, thinking=False, thinking_budget=1024) -> Message:
         params = {
             "model": self.model,
             "max_tokens": 8000,

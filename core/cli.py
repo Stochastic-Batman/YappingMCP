@@ -1,14 +1,14 @@
-from typing import List, Optional
+from core.cli_chat import CliChat
 from prompt_toolkit import PromptSession
+from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
+from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.document import Document
+from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.styles import Style
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
-from prompt_toolkit.document import Document
-from prompt_toolkit.buffer import Buffer
+from typing import List, Optional
 
-from core.cli_chat import CliChat
 
 
 class CommandAutoSuggest(AutoSuggest):
@@ -16,9 +16,8 @@ class CommandAutoSuggest(AutoSuggest):
         self.prompts = prompts
         self.prompt_dict = {prompt.name: prompt for prompt in prompts}
 
-    def get_suggestion(
-        self, buffer: Buffer, document: Document
-    ) -> Optional[Suggestion]:
+
+    def get_suggestion(self, buffer: Buffer, document: Document) -> Optional[Suggestion]:
         text = document.text
 
         if not text.startswith("/"):
@@ -42,12 +41,15 @@ class UnifiedCompleter(Completer):
         self.prompt_dict = {}
         self.resources = []
 
+
     def update_prompts(self, prompts: List):
         self.prompts = prompts
         self.prompt_dict = {prompt.name: prompt for prompt in prompts}
 
+
     def update_resources(self, resources: List):
         self.resources = resources
+
 
     def get_completions(self, document, complete_event):
         text = document.text
@@ -122,6 +124,7 @@ class CliApp:
 
         self.kb = KeyBindings()
 
+
         @self.kb.add("/")
         def _(event):
             buffer = event.app.current_buffer
@@ -131,12 +134,14 @@ class CliApp:
             else:
                 buffer.insert_text("/")
 
+
         @self.kb.add("@")
         def _(event):
             buffer = event.app.current_buffer
             buffer.insert_text("@")
             if buffer.document.is_cursor_at_the_end:
                 buffer.start_completion(select_first=False)
+
 
         @self.kb.add(" ")
         def _(event):
@@ -152,11 +157,7 @@ class CliApp:
                     buffer.start_completion(select_first=False)
                 elif len(parts) == 2:
                     arg = parts[1]
-                    if (
-                        "doc" in arg.lower()
-                        or "file" in arg.lower()
-                        or "id" in arg.lower()
-                    ):
+                    if ("doc" in arg.lower() or "file" in arg.lower() or "id" in arg.lower()):
                         buffer.start_completion(select_first=False)
 
         self.history = InMemoryHistory()
@@ -176,9 +177,11 @@ class CliApp:
             auto_suggest=self.command_autosuggester,
         )
 
+
     async def initialize(self):
         await self.refresh_resources()
         await self.refresh_prompts()
+
 
     async def refresh_resources(self):
         try:
@@ -186,6 +189,7 @@ class CliApp:
             self.completer.update_resources(self.resources)
         except Exception as e:
             print(f"Error refreshing resources: {e}")
+
 
     async def refresh_prompts(self):
         try:
@@ -195,6 +199,7 @@ class CliApp:
             self.session.auto_suggest = self.command_autosuggester
         except Exception as e:
             print(f"Error refreshing prompts: {e}")
+
 
     async def run(self):
         while True:

@@ -1,36 +1,32 @@
-from typing import List, Tuple
-from mcp.types import Prompt, PromptMessage
 from anthropic.types import MessageParam
-
 from core.chat import Chat
 from core.claude import Claude
+from mcp.types import Prompt, PromptMessage
 from mcp_client import MCPClient
+from typing import List, Tuple
 
 
 class CliChat(Chat):
-    def __init__(
-        self,
-        doc_client: MCPClient,
-        clients: dict[str, MCPClient],
-        claude_service: Claude,
-    ):
+    def __init__(self, doc_client: MCPClient, clients: dict[str, MCPClient], claude_service: Claude):
         super().__init__(clients=clients, claude_service=claude_service)
-
         self.doc_client: MCPClient = doc_client
+
 
     async def list_prompts(self) -> list[Prompt]:
         return await self.doc_client.list_prompts()
 
+
     async def list_docs_ids(self) -> list[str]:
         return await self.doc_client.read_resource("docs://documents")
+
 
     async def get_doc_content(self, doc_id: str) -> str:
         return await self.doc_client.read_resource(f"docs://documents/{doc_id}")
 
-    async def get_prompt(
-        self, command: str, doc_id: str
-    ) -> list[PromptMessage]:
+
+    async def get_prompt(self, command: str, doc_id: str) -> list[PromptMessage]:
         return await self.doc_client.get_prompt(command, {"doc_id": doc_id})
+
 
     async def _extract_resources(self, query: str) -> str:
         mentions = [word[1:] for word in query.split() if word.startswith("@")]
@@ -48,6 +44,7 @@ class CliChat(Chat):
             for doc_id, content in mentioned_docs
         )
 
+
     async def _process_command(self, query: str) -> bool:
         if not query.startswith("/"):
             return False
@@ -61,6 +58,7 @@ class CliChat(Chat):
 
         self.messages += convert_prompt_messages_to_message_params(messages)
         return True
+
 
     async def _process_query(self, query: str):
         if await self._process_command(query):
@@ -89,9 +87,7 @@ class CliChat(Chat):
         self.messages.append({"role": "user", "content": prompt})
 
 
-def convert_prompt_message_to_message_param(
-    prompt_message: "PromptMessage",
-) -> MessageParam:
+def convert_prompt_message_to_message_param(prompt_message: "PromptMessage") -> MessageParam:
     role = "user" if prompt_message.role == "user" else "assistant"
 
     content = prompt_message.content
@@ -135,9 +131,5 @@ def convert_prompt_message_to_message_param(
     return {"role": role, "content": ""}
 
 
-def convert_prompt_messages_to_message_params(
-    prompt_messages: List[PromptMessage],
-) -> List[MessageParam]:
-    return [
-        convert_prompt_message_to_message_param(msg) for msg in prompt_messages
-    ]
+def convert_prompt_messages_to_message_params(prompt_messages: List[PromptMessage]) -> List[MessageParam]:
+    return [convert_prompt_message_to_message_param(msg) for msg in prompt_messages]
